@@ -3,10 +3,22 @@ import s from "./ProfileInfo.module.css";
 import Preloader from "../../Common/Preloader/Preloader";
 import ProfileStatusWithHooks from "./ProfileStatusWithHooks";
 
-const ProfileInfo = (props) => {
-  if (!props.profile) {
+const ProfileInfo = ({
+  profile,
+  status,
+  updateUserStatus,
+  isOwner,
+  savePhoto,
+}) => {
+  if (!profile) {
     return <Preloader />;
   }
+
+  const onMainPhotoSelected = (e) => {
+    if (e.target.files.length) {
+      savePhoto(e.target.files[0]);
+    }
+  };
   return (
     <div>
       <div>
@@ -16,10 +28,17 @@ const ProfileInfo = (props) => {
         />
       </div>
       <div className={s.descriptionBlock}>
-        <img src={props.profile.photos.large} alt="" />
+        <img
+          src={
+            profile.photos.large ||
+            "https://image.flaticon.com/icons/png/128/924/924874.png"
+          }
+          alt=""
+        />
+        {isOwner && <input type={"file"} onChange={onMainPhotoSelected} />}
         <ProfileStatusWithHooks
-          status={props.status}
-          updateUserStatus={props.updateUserStatus}
+          status={status}
+          updateUserStatus={updateUserStatus}
         />
       </div>
     </div>
