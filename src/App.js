@@ -6,7 +6,7 @@ import Music from "./components/Music/Music";
 import Settings from "./components/Settings/Settings";
 import UsersContainer from "./components/Users/UsersContainer";
 import { Route } from "react-router-dom";
-import DialogsContainer from "./components/Dialogs/DialogsContainer";
+
 import NavbarContainer from "./components/Navbar/NavbarContainer";
 import HeaderContainer from "./components/Header/HeaderContainer";
 import LoginPage from "./components/Login/Login";
@@ -15,6 +15,11 @@ import { initialazeApp } from "./redux/app-reducer";
 import { compose } from "redux";
 import { withRouter } from "react-router";
 import Preloader from "./components/Common/Preloader/Preloader";
+
+// import DialogsContainer from "./components/Dialogs/DialogsContainer";
+const DialogsContainer = React.lazy(() =>
+  import("./components/Dialogs/DialogsContainer")
+);
 
 class App extends React.Component {
   componentDidMount() {
@@ -30,7 +35,16 @@ class App extends React.Component {
         <HeaderContainer />
         <NavbarContainer />
         <div className="app-wrapper-content">
-          <Route path="/dialogs" render={() => <DialogsContainer />} />
+          <Route
+            path="/dialogs"
+            render={() => {
+              return (
+                <React.Suspense fallback={<div>Loading...</div>}>
+                  <DialogsContainer />;
+                </React.Suspense>
+              );
+            }}
+          />
           <Route path="/profile/:userId?" render={() => <ProfileContainer />} />
           <Route path="/news" render={() => <News />} />
           <Route path="/music" render={() => <Music />} />
@@ -49,8 +63,5 @@ const mapStateToProps = (state) => ({
 
 export default compose(
   withRouter,
-  connect(
-    mapStateToProps,
-    { initialazeApp }
-  )
+  connect(mapStateToProps, { initialazeApp })
 )(App);
